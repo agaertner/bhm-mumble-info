@@ -22,7 +22,7 @@ namespace Nekres.Mumble_Info.Core.UI {
             await GetSpecialization(GameService.Gw2Mumble.PlayerCharacter.Specialization);
             await GetMap(GameService.Gw2Mumble.CurrentMap.Id);
             progress.Report(null);
-            return await base.Load(progress);
+            return true;
         }
 
         private async void OnSpecializationChanged(object sender, ValueEventArgs<int> e) {
@@ -95,9 +95,6 @@ namespace Nekres.Mumble_Info.Core.UI {
         }
 
         protected override void Unload() {
-            MumbleInfoModule.Instance.MumbleConfig.Value = null;
-            MumbleInfoModule.Instance.MumbleConfig.Value = this.Model; // Save model to settings.
-
             GameService.Gw2Mumble.CurrentMap.MapChanged                 -= OnMapChanged;
             GameService.Gw2Mumble.PlayerCharacter.SpecializationChanged -= OnSpecializationChanged;
             base.Unload();
