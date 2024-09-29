@@ -1,92 +1,137 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Controls;
 using Blish_HUD.Graphics.UI;
+using Microsoft.Xna.Framework;
+using MonoGame.Extended.BitmapFonts;
 using Nekres.Mumble_Info.Core.UI.Controls;
 
-namespace Nekres.Mumble_Info.Core.UI.Views.MumbleView {
+namespace Nekres.Mumble_Info.Core.UI {
     internal class MumbleView : View<MumblePresenter> {
 
+        private BitmapFont _font = GameService.Content.GetFont(ContentService.FontFace.Menomonia, ContentService.FontSize.Size16, ContentService.FontStyle.Regular);
         public MumbleView() {
-            this.WithPresenter(new MumblePresenter(this, GameService.Gw2Mumble));
+            this.WithPresenter(new MumblePresenter(this, MumbleInfoModule.Instance.MumbleConfig.Value));
         }
-
+        
         protected override void Build(Container buildPanel) {
-            var pnlAvatar = new FlowPanel() {
-                Title = "Avatar",
-                Width = buildPanel.ContentRegion.Width,
-                Height = buildPanel.ContentRegion.Height,
-                Collapsed = true
+            var flowContainer = new FlowPanel() {
+                Parent      = buildPanel,
+                CanCollapse = false,
+                Width       = buildPanel.ContentRegion.Width,
+                Height      = buildPanel.ContentRegion.Height,
+                CanScroll = true
             };
 
-            var lblAvatarName = new DynamicLabel(() => $"{this.Presenter.Model.PlayerCharacter.Name} - {this.Presenter.Model.PlayerCharacter.Race}") {
+            var pnlAvatar = new FlowPanel() {
+                Parent              = flowContainer,
+                Title               = "Avatar",
+                Width               = flowContainer.ContentRegion.Width,
+                HeightSizingMode    = SizingMode.AutoSize,
+                ControlPadding      = new Vector2(5, 2),
+                OuterControlPadding = new Vector2(10, 2),
+                Collapsed           = true
+            };
+
+            var lblAvatarName = new DynamicLabel(() => $"{GameService.Gw2Mumble.PlayerCharacter.Name} - {GameService.Gw2Mumble.PlayerCharacter.Race}") {
                 Parent = pnlAvatar,
                 Width = pnlAvatar.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font = _font
             };
 
             var lblAvatarProfession = new DynamicLabel(this.Presenter.GetPlayerProfession) {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font   = _font
             };
 
             var lblAvatarPos = new DynamicLabel(this.Presenter.GetPlayerPosition) {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font   = _font
             };
 
             var lblAvatarDir = new DynamicLabel(this.Presenter.GetPlayerDirection) {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font   = _font
             };
 
             var pnlCamera = new FlowPanel() {
-                Title     = "Camera",
-                Width     = buildPanel.ContentRegion.Width,
-                Height    = buildPanel.ContentRegion.Height,
-                Collapsed = true
+                Parent              = flowContainer,
+                Title               = "Camera",
+                Width               = flowContainer.ContentRegion.Width,
+                HeightSizingMode    = SizingMode.AutoSize,
+                ControlPadding      = new Vector2(5,  2),
+                OuterControlPadding = new Vector2(10, 2),
+                Collapsed           = true
             };
 
             var lblCameraPos = new DynamicLabel(this.Presenter.GetCameraPosition) {
                 Parent = pnlCamera,
                 Width  = pnlCamera.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font   = _font
             };
 
             var lblCameraDir = new DynamicLabel(this.Presenter.GetCameraDirection) {
                 Parent = pnlCamera,
                 Width  = pnlCamera.ContentRegion.Width,
-                Height = 50
+                Height = 25,
+                Font   = _font
             };
 
             var pnlUserInterface = new FlowPanel() {
-                Title     = "User Interface",
-                Width     = buildPanel.ContentRegion.Width,
-                Height    = buildPanel.ContentRegion.Height,
-                Collapsed = true
+                Parent              = flowContainer,
+                Title               = "User Interface",
+                Width               = flowContainer.ContentRegion.Width,
+                HeightSizingMode    = SizingMode.AutoSize,
+                ControlPadding      = new Vector2(5,  2),
+                OuterControlPadding = new Vector2(10, 2),
+                Collapsed           = true
 
             };
 
             var pnlMap = new FlowPanel() {
-                Title     = "Map",
-                Width     = buildPanel.ContentRegion.Width,
-                Height    = buildPanel.ContentRegion.Height,
-                Collapsed = true
+                Parent              = flowContainer,
+                Title               = "Map",
+                Width               = flowContainer.ContentRegion.Width,
+                HeightSizingMode    = SizingMode.AutoSize,
+                ControlPadding      = new Vector2(5,  2),
+                OuterControlPadding = new Vector2(10, 2),
+                Collapsed           = true
             };
 
             var lblMapName = new DynamicLabel(this.Presenter.GetMap) {
                 Parent = pnlMap,
-                Width = pnlMap.ContentRegion.Width,
-                Height = 50
+                Width  = pnlMap.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
             };
 
             var pnlInfo = new FlowPanel() {
-                Title     = "Gameinfo",
-                Width     = buildPanel.ContentRegion.Width,
-                Height    = buildPanel.ContentRegion.Height,
-                Collapsed = true
+                Parent              = flowContainer,
+                Title               = "Gameinfo",
+                Width               = flowContainer.ContentRegion.Width,
+                HeightSizingMode    = SizingMode.AutoSize,
+                ControlPadding      = new Vector2(5,  2),
+                OuterControlPadding = new Vector2(10, 2),
+                Collapsed           = true
+            };
+
+            buildPanel.ContentResized += (_, e) => {
+                flowContainer.Size = new Point(e.CurrentRegion.Width, e.CurrentRegion.Height);
+            };
+
+            flowContainer.ContentResized += (_, e) => {
+                pnlAvatar.Width        = e.CurrentRegion.Width;
+                pnlCamera.Width        = e.CurrentRegion.Width;
+                pnlUserInterface.Width = e.CurrentRegion.Width;
+                pnlMap.Width           = e.CurrentRegion.Width;
+                pnlInfo.Width          = e.CurrentRegion.Width;
             };
         }
     }

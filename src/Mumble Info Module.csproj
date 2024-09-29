@@ -136,6 +136,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\UI\Configs\ConfigBase.cs" />
+    <Compile Include="Core\UI\Configs\MumbleConfig.cs" />
     <Compile Include="Core\UI\Controls\DynamicLabel.cs" />
     <Compile Include="Core\UI\Views\MumbleView\MumblePresenter.cs" />
     <Compile Include="Core\UI\Views\MumbleView\MumbleView.cs" />
