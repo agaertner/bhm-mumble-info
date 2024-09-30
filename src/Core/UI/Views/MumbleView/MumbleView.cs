@@ -43,24 +43,43 @@ namespace Nekres.Mumble_Info.Core.UI {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
                 Height = 25,
-                Font   = _font
+                Font   = _font,
+                Icon   = MumbleInfoModule.Instance.Api.GetClassIcon((int)GameService.Gw2Mumble.PlayerCharacter.Profession, GameService.Gw2Mumble.PlayerCharacter.Specialization)
             };
 
             var lblAvatarPos = new DynamicLabel(this.Presenter.GetPlayerPosition) {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
                 Height = 25,
-                Font   = _font
+                Font   = _font,
+                Prefix = "Position: "
             };
 
             var lblAvatarDir = new DynamicLabel(this.Presenter.GetPlayerDirection) {
                 Parent = pnlAvatar,
                 Width  = pnlAvatar.ContentRegion.Width,
                 Height = 25,
-                Font   = _font
+                Font   = _font,
+                Prefix = "Direction: "
             };
 
-            var pnlCamera = new FlowPanel() {
+            var lblWaypoint = new DynamicLabel(this.Presenter.GetClosestWaypoint) {
+                Parent = pnlAvatar,
+                Width  = pnlAvatar.ContentRegion.Width,
+                Height = 25,
+                Font   = _font,
+                Icon   = MumbleInfoModule.Instance.Api.WaypointIcon
+            };
+
+            var lblPoi = new DynamicLabel(this.Presenter.GetClosestPoi) {
+                Parent = pnlAvatar,
+                Width  = pnlAvatar.ContentRegion.Width,
+                Height = 25,
+                Font   = _font,
+                Icon   = MumbleInfoModule.Instance.Api.PoiIcon
+            };
+
+            var pnlCamera = new FlowPanel {
                 Parent              = flowContainer,
                 Title               = "Camera",
                 Width               = flowContainer.ContentRegion.Width,
@@ -74,14 +93,16 @@ namespace Nekres.Mumble_Info.Core.UI {
                 Parent = pnlCamera,
                 Width  = pnlCamera.ContentRegion.Width,
                 Height = 25,
-                Font   = _font
+                Font   = _font,
+                Prefix = "Position: "
             };
 
             var lblCameraDir = new DynamicLabel(this.Presenter.GetCameraDirection) {
                 Parent = pnlCamera,
                 Width  = pnlCamera.ContentRegion.Width,
                 Height = 25,
-                Font   = _font
+                Font   = _font,
+                Prefix = "Direction: "
             };
 
             var pnlUserInterface = new FlowPanel() {
@@ -106,6 +127,13 @@ namespace Nekres.Mumble_Info.Core.UI {
             };
 
             var lblMapName = new DynamicLabel(this.Presenter.GetMap) {
+                Parent = pnlMap,
+                Width  = pnlMap.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
+            };
+
+            var lblSectorName = new DynamicLabel(this.Presenter.GetSector) {
                 Parent = pnlMap,
                 Width  = pnlMap.ContentRegion.Width,
                 Height = 25,

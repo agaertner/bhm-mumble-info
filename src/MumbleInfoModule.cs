@@ -6,6 +6,7 @@ using Blish_HUD.Modules.Managers;
 using Blish_HUD.Settings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Nekres.Mumble_Info.Core.Services;
 using Nekres.Mumble_Info.Core.UI;
 using System;
 using System.ComponentModel.Composition;
@@ -40,19 +41,22 @@ namespace Nekres.Mumble_Info {
 
         internal SettingEntry<MumbleConfig> MumbleConfig;
 
+        internal ApiService Api;
+
         protected override void DefineSettings(SettingCollection settings) {
             MumbleConfig = settings.DefineSetting("mumble_config", new MumbleConfig());
         }
 
         protected override void Initialize() {
+            this.Api = new ApiService();
         }
 
-        protected override async Task LoadAsync()
-        {
+        protected override async Task LoadAsync() {
+            await this.Api.Init();
         }
 
         protected override void Update(GameTime gameTime) {
-
+            this.Api.Update(gameTime);
         }
 
         protected override void OnModuleLoaded(EventArgs e) {
@@ -97,6 +101,7 @@ namespace Nekres.Mumble_Info {
             _cornerIcon?.Dispose();
             _cornerIconHover?.Dispose();
             _emblem?.Dispose();
+            Api?.Dispose();
             // All static members must be manually unset
             Instance = null;
         }

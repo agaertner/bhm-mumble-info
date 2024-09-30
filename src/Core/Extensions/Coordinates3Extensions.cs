@@ -1,9 +1,9 @@
-﻿using System.Numerics;
-using Gw2Sharp.Models;
+﻿using Gw2Sharp.Models;
 using Gw2Sharp.WebApi.V2.Models;
+using System.Collections.Generic;
+using System.Numerics;
 
-namespace Nekres.Mumble_Info
-{
+namespace Nekres.Mumble_Info {
     internal static class Coordinates3Extensions
     {
         private const float INCH_TO_METER = 0.0254F;
@@ -44,6 +44,22 @@ namespace Nekres.Mumble_Info
             return new Vector3((float)coords.X, (float)coords.Y,(float)coords.Z);
         }
 
+        public static bool Inside(this Coordinates2 targetPoint, IReadOnlyList<Coordinates2> polygon) {
+            if (polygon.Count < 3) {
+                // Must have at least 3 vertices to be valid.
+                return false;
+            }
+            double x        = targetPoint.X;
+            double y        = targetPoint.Y;
+            bool   isInside = false;
+            for (int i = 0, j = polygon.Count - 1; i < polygon.Count; j = i++) {
+                if ((polygon[i].Y > y) != (polygon[j].Y > y) &&
+                    x                  < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X) {
+                    isInside = !isInside;
+                }
+            }
+            return isInside;
+        }
     }
 
     public enum CoordsUnit

@@ -136,18 +136,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Services\ApiService.cs" />
     <Compile Include="Core\UI\Configs\ConfigBase.cs" />
     <Compile Include="Core\UI\Configs\MumbleConfig.cs" />
     <Compile Include="Core\UI\Controls\DynamicLabel.cs" />
     <Compile Include="Core\UI\Views\MumbleView\MumblePresenter.cs" />
     <Compile Include="Core\UI\Views\MumbleView\MumbleView.cs" />
     <Compile Include="MumbleInfoModule.cs" />
-    <Compile Include="_Extensions\StructExtensions.cs" />
-    <Compile Include="_Extensions\Vector3Extensions.cs" />
+    <Compile Include="Core\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Core\Extensions\StructExtensions.cs" />
+    <Compile Include="Core\Extensions\Vector3Extensions.cs" />
     <Compile Include="Core\Utils\DirectionUtil.cs" />
-    <Compile Include="_Extensions\Coordinates3Extensions.cs" />
-    <Compile Include="_Extensions\RectangleExtensions.cs" />
-    <Compile Include="_Extensions\StringExtensions.cs" />
+    <Compile Include="Core\Extensions\Coordinates3Extensions.cs" />
+    <Compile Include="Core\Extensions\RectangleExtensions.cs" />
+    <Compile Include="Core\Extensions\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="AsyncClipboardService, Version=1.7.1.0, Culture=neutral, PublicKeyToken=null">
