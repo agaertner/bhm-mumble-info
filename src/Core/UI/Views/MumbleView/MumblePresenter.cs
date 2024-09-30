@@ -11,6 +11,14 @@ namespace Nekres.Mumble_Info.Core.UI {
 
         }
 
+        public string GetRace() {
+            if (string.IsNullOrEmpty(GameService.Gw2Mumble.PlayerCharacter.Name)) {
+                return string.Empty;
+            }
+
+            return $"{GameService.Gw2Mumble.PlayerCharacter.Name} ({MumbleInfoModule.Instance.Api.GetRaceName((int)GameService.Gw2Mumble.PlayerCharacter.Race)})";
+        }
+
         public string GetPlayerProfession() {
             var elite = MumbleInfoModule.Instance.Api.GetSpecializationName(GameService.Gw2Mumble.PlayerCharacter.Specialization);
             var prof = MumbleInfoModule.Instance.Api.GetProfessionName((int)GameService.Gw2Mumble.PlayerCharacter.Profession);

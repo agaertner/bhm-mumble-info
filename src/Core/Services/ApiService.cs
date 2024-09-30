@@ -23,10 +23,12 @@ namespace Nekres.Mumble_Info.Core.Services {
 
         private IReadOnlyList<ContinentFloorRegionMap>       _regionMaps;
         private IReadOnlyList<ContinentFloorRegionMapSector> _mapSectors;
-        private Dictionary<int, string>                      _profNames;
-        private Dictionary<int, AsyncTexture2D>              _profIcons;
-        private Dictionary<int, string>                      _eliteNames;
-        private Dictionary<int, AsyncTexture2D>              _eliteIcons;
+
+        private Dictionary<int, string>         _raceNames;
+        private Dictionary<int, string>         _profNames;
+        private Dictionary<int, AsyncTexture2D> _profIcons;
+        private Dictionary<int, string>         _eliteNames;
+        private Dictionary<int, AsyncTexture2D> _eliteIcons;
 
         public ApiService() {
             this.ProfessionIcon =  new AsyncTexture2D();
@@ -34,7 +36,7 @@ namespace Nekres.Mumble_Info.Core.Services {
             GameService.Overlay.UserLocaleChanged       += OnUserLocaleChanged;
         }
 
-        public async Task Init(bool localeChange = false) {
+        public async Task Init() {
             await RequestMap(GameService.Gw2Mumble.CurrentMap.Id);
             await RequestProfessions();
             WaypointIcon = GameService.Content.DatAssetCache.GetTextureFromAssetId(733330);
@@ -46,15 +48,19 @@ namespace Nekres.Mumble_Info.Core.Services {
         }
 
         private async void OnUserLocaleChanged(object sender, ValueEventArgs<CultureInfo> e) {
-            await Init(true);
+            await Init();
         }
 
-        public string GetProfessionName(int profession) {
-            return _profNames.TryGetValue(profession, out var name) ? name : string.Empty;
+        public string GetRaceName(int raceId) {
+            return _raceNames.TryGetValue(raceId, out var name) ? name : string.Empty;
         }
 
-        public string GetSpecializationName(int elite) {
-            return _eliteNames.TryGetValue(elite, out var name) ? name : string.Empty;
+        public string GetProfessionName(int professionId) {
+            return _profNames.TryGetValue(professionId, out var name) ? name : string.Empty;
+        }
+
+        public string GetSpecializationName(int specializationId) {
+            return _eliteNames.TryGetValue(specializationId, out var name) ? name : string.Empty;
         }
 
         public AsyncTexture2D GetClassIcon(int profession, int elite) {
@@ -78,30 +84,24 @@ namespace Nekres.Mumble_Info.Core.Services {
             }
         }
 
-        private async Task RequestProfessions(bool localeChange = false) {
+        private async Task RequestProfessions() {
+            var races = await TaskUtil.TryAsync(() => GameService.Gw2WebApi.AnonymousConnection.Client.V2.Races.AllAsync());
+            if (races != null) {
+                _raceNames = races.ToDictionary(x => (int)(RaceType)Enum.Parse(typeof(RaceType), x.Id, true), x => x.Name);
+            }
+            
             var professions = await TaskUtil.TryAsync(() => GameService.Gw2WebApi.AnonymousConnection.Client.V2.Professions.AllAsync());
-
-            if (professions == null) {
-                return;
+            if (professions != null) {
+                _profNames = professions.ToDictionary(x => (int)(ProfessionType)Enum.Parse(typeof(ProfessionType), x.Id, true), x => x.Name);
+                _profIcons = professions.ToDictionary(x => (int)(ProfessionType)Enum.Parse(typeof(ProfessionType), x.Id, true), x => GameService.Content.GetRenderServiceTexture(x.IconBig));
             }
 
             var specializations = await TaskUtil.TryAsync(() => GameService.Gw2WebApi.AnonymousConnection.Client.V2.Specializations.AllAsync());
-
-            if (specializations == null) {
-                return;
+            if (specializations != null) {
+                var elites = specializations.Where(x => x.Elite).ToList();
+                _eliteNames = elites.ToDictionary(x => x.Id, x => x.Name);
+                _eliteIcons = elites.ToDictionary(x => x.Id, x => GameService.Content.GetRenderServiceTexture(x.ProfessionIconBig));
             }
-
-            var elites = specializations.Where(x => x.Elite).ToList();
-
-            _profNames  = professions.ToDictionary(x => (int)(ProfessionType)Enum.Parse(typeof(ProfessionType), x.Id, true), x => x.Name);
-            _eliteNames = elites.ToDictionary(x => x.Id, x => x.Name);
-
-            if (localeChange) {
-                return;
-            }
-
-            _profIcons  = professions.ToDictionary(x => (int)(ProfessionType)Enum.Parse(typeof(ProfessionType), x.Id, true), x => GameService.Content.GetRenderServiceTexture(x.IconBig));
-            _eliteIcons = elites.ToDictionary(x => x.Id, x => GameService.Content.GetRenderServiceTexture(x.ProfessionIconBig));
         }
 
         private async Task<IReadOnlyList<ContinentFloorRegionMap>> RequestRegionMap(Map map) {

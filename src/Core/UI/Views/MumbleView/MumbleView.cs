@@ -32,7 +32,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 Collapsed           = true
             };
 
-            var lblAvatarName = new DynamicLabel(() => $"{GameService.Gw2Mumble.PlayerCharacter.Name} - {GameService.Gw2Mumble.PlayerCharacter.Race}") {
+            var lblAvatarName = new DynamicLabel(this.Presenter.GetRace) {
                 Parent = pnlAvatar,
                 Width = pnlAvatar.ContentRegion.Width,
                 Height = 25,

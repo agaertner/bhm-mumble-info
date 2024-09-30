@@ -42,28 +42,23 @@ namespace Nekres.Mumble_Info.Core.UI.Controls {
             _textData = textData;
         }
 
-        public override void Draw(SpriteBatch spriteBatch, Rectangle drawBounds, Rectangle scissor) {
-            spriteBatch.Begin();
-
+        protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
             var size   = _font.MeasureString(".");
             var height = (int)Math.Round(size.Height);
             var width  = (int)Math.Round(size.Width);
 
             var prefix = _prefix;
-            if (_icon is {HasSwapped: true, HasTexture: true}) {
-                prefix = "    " + prefix;
-                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(0,0,height,height));
+            if (_icon is { HasSwapped: true, HasTexture: true }) {
+                prefix = "    " + prefix; // Pad text to make space for icon.
+                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(0, (bounds.Height - height) / 2, height, height));
             }
 
-            //TODO: Bugfix wrong pos for icon and possibly loading spinner
-            
             var textData = _textData?.Invoke();
             if (string.IsNullOrEmpty(textData)) {
-                LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, new Rectangle(width + 2, 0, height, height));
+                LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, new Rectangle(width + height, (bounds.Height - height) / 2, height, height));
             }
             this.Text = prefix + textData;
-            spriteBatch.End();
-            base.Draw(spriteBatch, drawBounds, scissor);
+            base.Paint(spriteBatch, bounds);
         }
     }
 }
