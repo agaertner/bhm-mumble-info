@@ -5,7 +5,7 @@
   "package": "MumbleInfo.dll",
   "manifest_version": 1,
 
-  "description": "Displays real-time contextual data exposed by Guild Wars 2 using the MumbleLink specification.\nCan also display CPU and RAM utilization by the game.",
+  "description": "Displays real-time contextual data exposed by Guild Wars 2 using the MumbleLink specification.",
   "dependencies": {
     "bh.blishhud": ">=1.2.0"
   },

@@ -27,9 +27,9 @@ namespace Nekres.Mumble_Info.Core.UI {
                 Title               = "Avatar",
                 Width               = flowContainer.ContentRegion.Width,
                 HeightSizingMode    = SizingMode.AutoSize,
-                ControlPadding      = new Vector2(5, 2),
+                ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 2),
-                Collapsed           = true
+                Collapsed           = false
             };
 
             var lblAvatarName = new DynamicLabel(this.Presenter.GetRace) {
@@ -53,6 +53,9 @@ namespace Nekres.Mumble_Info.Core.UI {
                 Height = 25,
                 Font   = _font,
                 Prefix = "Position: "
+            };
+
+            lblAvatarPos.Click += (_, _) => {
             };
 
             var lblAvatarDir = new DynamicLabel(this.Presenter.GetPlayerDirection) {
@@ -86,7 +89,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 HeightSizingMode    = SizingMode.AutoSize,
                 ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 2),
-                Collapsed           = true
+                Collapsed           = false
             };
 
             var lblCameraPos = new DynamicLabel(this.Presenter.GetCameraPosition) {
@@ -112,8 +115,22 @@ namespace Nekres.Mumble_Info.Core.UI {
                 HeightSizingMode    = SizingMode.AutoSize,
                 ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 2),
-                Collapsed           = true
+                Collapsed           = false
 
+            };
+
+            var lblUISize = new DynamicLabel(this.Presenter.GetUiSize) {
+                Parent = pnlUserInterface,
+                Width  = pnlUserInterface.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
+            };
+
+            var lblCompass = new DynamicLabel(this.Presenter.GetCompassBounds) {
+                Parent = pnlUserInterface,
+                Width  = pnlUserInterface.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
             };
 
             var pnlMap = new FlowPanel() {
@@ -123,7 +140,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 HeightSizingMode    = SizingMode.AutoSize,
                 ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 2),
-                Collapsed           = true
+                Collapsed           = false
             };
 
             var lblMapName = new DynamicLabel(this.Presenter.GetMap) {
@@ -147,7 +164,36 @@ namespace Nekres.Mumble_Info.Core.UI {
                 HeightSizingMode    = SizingMode.AutoSize,
                 ControlPadding      = new Vector2(5,  2),
                 OuterControlPadding = new Vector2(10, 2),
-                Collapsed           = true
+                Collapsed           = false
+            };
+
+            var lblMumbleVersion = new Label {
+                Parent = pnlInfo,
+                Width  = pnlInfo.ContentRegion.Width,
+                Height = 25,
+                Font   = _font,
+                Text = $"Mumble Link v{GameService.Gw2Mumble.Info.Version}"
+            };
+
+            var lblProcessId = new DynamicLabel(this.Presenter.GetProcessId) {
+                Parent = pnlInfo,
+                Width  = pnlInfo.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
+            };
+
+            var lblServerAddress = new DynamicLabel(this.Presenter.GetServerAddress) {
+                Parent = pnlInfo,
+                Width  = pnlInfo.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
+            };
+
+            var lblShardId = new DynamicLabel(this.Presenter.GetShardId) {
+                Parent = pnlInfo,
+                Width  = pnlInfo.ContentRegion.Width,
+                Height = 25,
+                Font   = _font
             };
 
             buildPanel.ContentResized += (_, e) => {

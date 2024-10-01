@@ -52,20 +52,20 @@ namespace Nekres.Mumble_Info.Core.Services {
         }
 
         public string GetRaceName(int raceId) {
-            return _raceNames.TryGetValue(raceId, out var name) ? name : string.Empty;
+            return _raceNames?.TryGetValue(raceId, out var name) ?? false ? name : string.Empty;
         }
 
         public string GetProfessionName(int professionId) {
-            return _profNames.TryGetValue(professionId, out var name) ? name : string.Empty;
+            return _profNames?.TryGetValue(professionId, out var name) ?? false ? name : string.Empty;
         }
 
         public string GetSpecializationName(int specializationId) {
-            return _eliteNames.TryGetValue(specializationId, out var name) ? name : string.Empty;
+            return _eliteNames?.TryGetValue(specializationId, out var name) ?? false ? name : string.Empty;
         }
 
         public AsyncTexture2D GetClassIcon(int profession, int elite) {
-            return _eliteIcons.TryGetValue(elite, out var icon) ? icon :
-                   _profIcons.TryGetValue(profession, out icon) ? icon : ContentService.Textures.TransparentPixel;
+            return _eliteIcons?.TryGetValue(elite, out var icon) ?? false ? icon :
+                   _profIcons?.TryGetValue(profession, out icon) ?? false ? icon : ContentService.Textures.TransparentPixel;
         }
 
         private async void OnMapChanged(object sender, ValueEventArgs<int> e) {

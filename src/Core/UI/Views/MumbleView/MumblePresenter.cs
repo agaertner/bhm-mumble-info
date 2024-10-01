@@ -1,11 +1,19 @@
 ﻿using Blish_HUD;
 using Blish_HUD.Extended;
 using Blish_HUD.Graphics.UI;
+using Microsoft.Xna.Framework;
+using System;
 
 namespace Nekres.Mumble_Info.Core.UI {
     internal class MumblePresenter : Presenter<MumbleView, MumbleConfig> {
-
+        private const string FORMAT_2D      = "xpos=\"{0}\" ypos=\"{1}\"";
+        private const string FORMAT_3D      = FORMAT_2D + " zpos=\"{2}\"";
         private const string DECIMAL_FORMAT = "0.###";
+        private const int    MAPWIDTH_MAX   = 362;
+        private const int    MAPHEIGHT_MAX  = 338;
+        private const int    MAPWIDTH_MIN   = 170;
+        private const int    MAPHEIGHT_MIN  = 170;
+        private const int    MAPOFFSET_MIN  = 19;
 
         public MumblePresenter(MumbleView view, MumbleConfig model) : base(view, model) {
 
@@ -22,7 +30,8 @@ namespace Nekres.Mumble_Info.Core.UI {
         public string GetPlayerProfession() {
             var elite = MumbleInfoModule.Instance.Api.GetSpecializationName(GameService.Gw2Mumble.PlayerCharacter.Specialization);
             var prof = MumbleInfoModule.Instance.Api.GetProfessionName((int)GameService.Gw2Mumble.PlayerCharacter.Profession);
-            return string.IsNullOrEmpty(elite) ? prof : $"{elite} ({prof})";
+            return string.IsNullOrEmpty(elite)  ? prof :
+                   string.IsNullOrEmpty(prof) ? elite : $"{elite} ({prof})";
         }
 
         public string GetMap() {
@@ -75,5 +84,42 @@ namespace Nekres.Mumble_Info.Core.UI {
         protected override void Unload() {
             base.Unload();
         }
+
+        public string GetProcessId() {
+            return $"PID: {GameService.Gw2Mumble.Info.ProcessId}";
+        }
+
+        public string GetServerAddress() {
+            return $"Server Addr.: {GameService.Gw2Mumble.Info.ServerAddress} : {GameService.Gw2Mumble.Info.ServerPort}";
+        }
+
+        public string GetShardId() {
+            return $"Shard ID: {GameService.Gw2Mumble.Info.ShardId}";
+        }
+
+        public string GetUiSize() {
+            return $"UI Size: {GameService.Gw2Mumble.UI.UISize}";
+        }
+
+        private int GetOffset(float curr, float max, float min, float val) {
+            return (int)Math.Round((curr - min) / (max - min) * (val - MAPOFFSET_MIN) + MAPOFFSET_MIN, 0);
+        }
+
+        public string GetCompassBounds() {
+            int offsetWidth  = GetOffset(GameService.Gw2Mumble.UI.CompassSize.Width,  MAPWIDTH_MAX,  MAPWIDTH_MIN,  40);
+            int offsetHeight = GetOffset(GameService.Gw2Mumble.UI.CompassSize.Height, MAPHEIGHT_MAX, MAPHEIGHT_MIN, 40);
+
+            int width  = GameService.Gw2Mumble.UI.CompassSize.Width            + offsetWidth;
+            int height = GameService.Gw2Mumble.UI.CompassSize.Height           + offsetHeight;
+            int x      = GameService.Graphics.SpriteScreen.ContentRegion.Width - width;
+            int y      = 0;
+
+            if (!GameService.Gw2Mumble.UI.IsCompassTopRight) {
+                y += GameService.Graphics.SpriteScreen.ContentRegion.Height - height - 40;
+            }
+            var compass = new Rectangle(x, y, width, height);
+            return $"Compass: {compass.X} X / {compass.Y} Y / {compass.Width} W / {compass.Height} H";
+        }
+
     }
 }
