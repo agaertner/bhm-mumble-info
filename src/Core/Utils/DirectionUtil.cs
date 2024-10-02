@@ -1,15 +1,13 @@
-﻿using System;
-using Gw2Sharp.Models;
+﻿using Gw2Sharp.Models;
+using System;
 
-namespace Nekres.Mumble_Info
-{
+namespace Nekres.Mumble_Info {
     internal static class DirectionUtil
     {
         public static Direction IsFacing(Coordinates3 coordinates) {
             return GetDirectionFromAngle(Math.Atan2(coordinates.X, coordinates.Y) * 180 / Math.PI);
         }
-        public static Direction GetDirectionFromAngle(double angle)
-        {
+        public static Direction GetDirectionFromAngle(double angle) {
             if (angle < -168.75)
                 return Direction.South;
             if (angle < -146.25)
