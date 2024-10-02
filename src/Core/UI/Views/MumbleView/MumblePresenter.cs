@@ -1,19 +1,18 @@
 ﻿using Blish_HUD;
+using Blish_HUD.Controls;
 using Blish_HUD.Extended;
 using Blish_HUD.Graphics.UI;
+using Gw2Sharp.Models;
 using Microsoft.Xna.Framework;
 using System;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Nekres.Mumble_Info.Core.UI {
     internal class MumblePresenter : Presenter<MumbleView, MumbleConfig> {
         private const string FORMAT_2D      = "xpos=\"{0}\" ypos=\"{1}\"";
         private const string FORMAT_3D      = FORMAT_2D + " zpos=\"{2}\"";
         private const string DECIMAL_FORMAT = "0.###";
-        private const int    MAPWIDTH_MAX   = 362;
-        private const int    MAPHEIGHT_MAX  = 338;
-        private const int    MAPWIDTH_MIN   = 170;
-        private const int    MAPHEIGHT_MIN  = 170;
-        private const int    MAPOFFSET_MIN  = 19;
 
         public MumblePresenter(MumbleView view, MumbleConfig model) : base(view, model) {
 
@@ -35,6 +34,9 @@ namespace Nekres.Mumble_Info.Core.UI {
         }
 
         public string GetMap() {
+            if (GameService.Gw2Mumble.CurrentMap.Id <= 0) {
+                return string.Empty;
+            }
             var mapName = MumbleInfoModule.Instance.Api.Map?.Name ?? string.Empty;
             return string.IsNullOrEmpty(mapName) ? $"{GameService.Gw2Mumble.CurrentMap.Id}" : $"{mapName} ({GameService.Gw2Mumble.CurrentMap.Id})";
         }
@@ -51,35 +53,41 @@ namespace Nekres.Mumble_Info.Core.UI {
             return MumbleInfoModule.Instance.Api.ClosestPoi?.Name ?? string.Empty;
         }
 
-        public string GetPlayerPosition() {
-            return string.Format(this.Model.SwapYZ ? "{0} / {2} / {1}" : "{0} / {1} / {2}",
-                                 GameService.Gw2Mumble.PlayerCharacter.Position.X.ToString(DECIMAL_FORMAT), 
-                                 GameService.Gw2Mumble.PlayerCharacter.Position.Y.ToString(DECIMAL_FORMAT),
-                                 GameService.Gw2Mumble.PlayerCharacter.Position.Z.ToString(DECIMAL_FORMAT));
+        private string Vec3ToStr(Vector3 vec, bool markerPackFormat) {
+            var format = markerPackFormat ? FORMAT_3D : "{0} / {1} / {2}";
+            return string.Format(format,
+                                 vec.X.ToString(DECIMAL_FORMAT, NumberFormatInfo.InvariantInfo),
+                                 vec.Y.ToString(DECIMAL_FORMAT, NumberFormatInfo.InvariantInfo),
+                                 vec.Z.ToString(DECIMAL_FORMAT, NumberFormatInfo.InvariantInfo));
+        }
+        private string Coords2ToStr(Coordinates2 vec, bool markerPackFormat) {
+            var format = markerPackFormat ? FORMAT_2D : "{0} / {1}";
+            return string.Format(format,
+                                 vec.X.ToString(DECIMAL_FORMAT, NumberFormatInfo.InvariantInfo),
+                                 vec.Y.ToString(DECIMAL_FORMAT, NumberFormatInfo.InvariantInfo));
         }
 
-        public string GetPlayerDirection() {
-            var dir = string.Format(this.Model.SwapYZ ? "{0} / {2} / {1}" : "{0} / {1} / {2}",
-                                    GameService.Gw2Mumble.PlayerCharacter.Forward.X.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCharacter.Forward.Y.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCharacter.Forward.Z.ToString(DECIMAL_FORMAT));
-            return $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.AvatarFront).ToString().SplitCamelCase()})";
+        public string GetPlayerPosition(bool markerPackFormat) {
+            return Vec3ToStr(GameService.Gw2Mumble.PlayerCharacter.Position(this.Model.SwapYZ), markerPackFormat);
         }
+        public string GetPlayerPosition() => GetPlayerPosition(false);
 
-        public string GetCameraPosition() {
-            return string.Format(this.Model.SwapYZ ? "{0} / {2} / {1}" : "{0} / {1} / {2}",
-                                    GameService.Gw2Mumble.PlayerCamera.Position.X.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCamera.Position.Y.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCamera.Position.Z.ToString(DECIMAL_FORMAT));
+        public string GetPlayerDirection(bool markerPackFormat) {
+            var dir = Vec3ToStr(GameService.Gw2Mumble.PlayerCharacter.Forward(this.Model.SwapYZ), markerPackFormat);
+            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.AvatarFront).ToString().SplitCamelCase()})";
         }
+        public string GetPlayerDirection() => GetPlayerDirection(false);
 
-        public string GetCameraDirection() {
-            var dir = string.Format(this.Model.SwapYZ ? "{0} / {2} / {1}" : "{0} / {1} / {2}",
-                                    GameService.Gw2Mumble.PlayerCamera.Forward.X.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCamera.Forward.Y.ToString(DECIMAL_FORMAT),
-                                    GameService.Gw2Mumble.PlayerCamera.Forward.Z.ToString(DECIMAL_FORMAT));
-            return $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.CameraFront).ToString().SplitCamelCase()})";
+        public string GetCameraPosition(bool markerPackFormat) {
+            return Vec3ToStr(GameService.Gw2Mumble.PlayerCamera.Position(this.Model.SwapYZ), markerPackFormat);
         }
+        public string GetCameraPosition() => GetCameraPosition(false);
+
+        public string GetCameraDirection(bool markerPackFormat) {
+            var dir = Vec3ToStr(GameService.Gw2Mumble.PlayerCamera.Forward(this.Model.SwapYZ), markerPackFormat);
+            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.CameraFront).ToString().SplitCamelCase()})";
+        }
+        public string GetCameraDirection() => GetCameraDirection(false);
 
         protected override void Unload() {
             base.Unload();
@@ -101,25 +109,59 @@ namespace Nekres.Mumble_Info.Core.UI {
             return $"UI Size: {GameService.Gw2Mumble.UI.UISize}";
         }
 
-        private int GetOffset(float curr, float max, float min, float val) {
-            return (int)Math.Round((curr - min) / (max - min) * (val - MAPOFFSET_MIN) + MAPOFFSET_MIN, 0);
-        }
-
         public string GetCompassBounds() {
-            int offsetWidth  = GetOffset(GameService.Gw2Mumble.UI.CompassSize.Width,  MAPWIDTH_MAX,  MAPWIDTH_MIN,  40);
-            int offsetHeight = GetOffset(GameService.Gw2Mumble.UI.CompassSize.Height, MAPHEIGHT_MAX, MAPHEIGHT_MIN, 40);
-
-            int width  = GameService.Gw2Mumble.UI.CompassSize.Width            + offsetWidth;
-            int height = GameService.Gw2Mumble.UI.CompassSize.Height           + offsetHeight;
-            int x      = GameService.Graphics.SpriteScreen.ContentRegion.Width - width;
-            int y      = 0;
-
-            if (!GameService.Gw2Mumble.UI.IsCompassTopRight) {
-                y += GameService.Graphics.SpriteScreen.ContentRegion.Height - height - 40;
-            }
-            var compass = new Rectangle(x, y, width, height);
+            var compass = GameService.Gw2Mumble.UI.CompassBounds();
             return $"Compass: {compass.X} X / {compass.Y} Y / {compass.Width} W / {compass.Height} H";
         }
+
+        public async Task CopyToClipboard(string text) {
+            bool copied = false;
+            try {
+                copied = await ClipboardUtil.WindowsClipboardService.SetTextAsync(text);
+            } catch (Exception e) {
+                MumbleInfoModule.Logger.Warn(e, e.Message);
+            }
+            if (copied) {
+                ScreenNotification.ShowNotification("Copied to Clipboard");
+                GameService.Content.PlaySoundEffectByName("color-change");
+            } else {
+                ScreenNotification.ShowNotification("Unable to Copy. Please try again.", ScreenNotification.NotificationType.Warning);
+                GameService.Content.PlaySoundEffectByName("error");
+            }
+        }
+
+        public string GetMapPosition(bool markerPackFormat) {
+            return $"Position: {Coords2ToStr(GameService.Gw2Mumble.UI.MapPosition, markerPackFormat)}";
+        }
+        public string GetMapPosition() => GetMapPosition(false);
+
+        public string GetMapType() {
+            var comp = GameService.Gw2Mumble.CurrentMap.IsCompetitiveMode ? " (Competitive)" : string.Empty;
+            return $"Type: {GameService.Gw2Mumble.CurrentMap.Type}" + comp;
+        }
+
+        public string GetContinent() {
+            var continent = MumbleInfoModule.Instance.Api.Map?.ContinentName ?? string.Empty;
+            var region    = MumbleInfoModule.Instance.Api.Map?.RegionName    ?? string.Empty;
+            if (string.IsNullOrEmpty(continent) || string.IsNullOrEmpty(region)) {
+                return string.Empty;
+            }
+            return $"{continent} - {region}";
+        }
+
+        public string GetMapHash(bool discordRichPresenceFormat) {
+            if (MumbleInfoModule.Instance.Api.Map == null) {
+                return string.Empty;
+            }
+
+            var format = discordRichPresenceFormat ? "\"{0}\": {1}, // {2} ({1})" : "Hash: {0}";
+            return string.Format(format, 
+                                 MumbleInfoModule.Instance.Api.Map.GetHash(), 
+                                 MumbleInfoModule.Instance.Api.Map.Id, 
+                                 MumbleInfoModule.Instance.Api.Map.Name);
+        }
+
+        public string GetMapHash() => GetMapHash(false);
 
     }
 }

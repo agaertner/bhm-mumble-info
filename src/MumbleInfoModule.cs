@@ -80,7 +80,7 @@ namespace Nekres.Mumble_Info {
                                                   new Rectangle(52, 36, 887, 605)) {
                     Parent        = GameService.Graphics.SpriteScreen,
                     Emblem        = _emblem,
-                    Size          = new Point(300, 500),
+                    Size          = new Point(435, 900),
                     CanResize     = true,
                     SavesPosition = true,
                     SavesSize     = true,
