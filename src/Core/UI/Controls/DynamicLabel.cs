@@ -18,11 +18,11 @@ namespace Nekres.Mumble_Info.Core.UI.Controls {
             }
         }
 
-        private string _prefix;
-        public string Prefix {
-            get => _prefix;
+        private Color _textDataColor;
+        public Color TextDataColor {
+            get => _textDataColor;
             set {
-                if (SetProperty(ref _prefix, value)) {
+                if (SetProperty(ref _textDataColor, value)) {
 
                 }
             }
@@ -38,27 +38,43 @@ namespace Nekres.Mumble_Info.Core.UI.Controls {
             }
         }
 
+        private bool _strokeTextData;
+        public bool StrokeTextData {
+            get => _strokeTextData;
+            set {
+                if (SetProperty(ref _strokeTextData, value)) {
+
+                }
+            }
+        }
+
         public DynamicLabel(Func<string> textData) {
-            _textData = textData;
+            _textDataColor = _textColor;
+            _textData      = textData;
         }
 
         protected override void Paint(SpriteBatch spriteBatch, Rectangle bounds) {
-            var size   = _font.MeasureString(".");
-            var height = (int)Math.Round(size.Height);
-            var width  = (int)Math.Round(size.Width);
+            var size = _font.MeasureString(string.IsNullOrEmpty(_text) ? "." : _text);
+            var width = string.IsNullOrEmpty(_text) ? 0 : (int)Math.Round(size.Width);
+            var iconSize = (int)Math.Round(size.Height); // Set icon size to fit height of text.
 
-            var prefix = _prefix;
             if (_icon is { HasSwapped: true, HasTexture: true }) {
-                prefix = "    " + prefix; // Pad text to make space for icon.
-                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(0, (bounds.Height - height) / 2, height, height));
+                spriteBatch.DrawOnCtrl(this, _icon, new Rectangle(0, (bounds.Height - iconSize) / 2, iconSize, iconSize));
+                bounds = new Rectangle(bounds.X + iconSize, bounds.Y, bounds.Width - iconSize, bounds.Height); // Pad text to the right of the icon.
             }
 
-            var textData = _textData?.Invoke();
+            base.Paint(spriteBatch, bounds); // Draw normal static text first as a prefix.
+
+            var textData = _textData?.Invoke(); // Fetch dynamic text data.
+
             if (string.IsNullOrEmpty(textData)) {
-                LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, new Rectangle(width + height, (bounds.Height - height) / 2, height, height));
+                LoadingSpinnerUtil.DrawLoadingSpinner(this, spriteBatch, new Rectangle(width + iconSize, (bounds.Height - iconSize) / 2, iconSize, iconSize));
+                return;
             }
-            this.Text = prefix + textData;
-            base.Paint(spriteBatch, bounds);
+
+            // Draw text data to the right of the normal static text.
+            bounds = new Rectangle(bounds.X + width + 1, bounds.Y, bounds.Width - width, bounds.Height);
+            spriteBatch.DrawStringOnCtrl(this, textData, _font, bounds, _textDataColor, _wrapText, _strokeTextData, 1, _horizontalAlignment, _verticalAlignment);
         }
     }
 }

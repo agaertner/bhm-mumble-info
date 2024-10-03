@@ -94,24 +94,24 @@ namespace Nekres.Mumble_Info.Core.UI {
         }
 
         public string GetProcessId() {
-            return $"PID: {GameService.Gw2Mumble.Info.ProcessId}";
+            return $"{GameService.Gw2Mumble.Info.ProcessId}";
         }
 
         public string GetServerAddress() {
-            return $"Server Addr.: {GameService.Gw2Mumble.Info.ServerAddress} : {GameService.Gw2Mumble.Info.ServerPort}";
+            return $"{GameService.Gw2Mumble.Info.ServerAddress} : {GameService.Gw2Mumble.Info.ServerPort}";
         }
 
         public string GetShardId() {
-            return $"Shard ID: {GameService.Gw2Mumble.Info.ShardId}";
+            return $"{GameService.Gw2Mumble.Info.ShardId}";
         }
 
         public string GetUiSize() {
-            return $"UI Size: {GameService.Gw2Mumble.UI.UISize}";
+            return $"{GameService.Gw2Mumble.UI.UISize}";
         }
 
         public string GetCompassBounds() {
             var compass = GameService.Gw2Mumble.UI.CompassBounds();
-            return $"Compass: {compass.X} X / {compass.Y} Y / {compass.Width} W / {compass.Height} H";
+            return $"{compass.X} X / {compass.Y} Y / {compass.Width} W / {compass.Height} H";
         }
 
         public async Task CopyToClipboard(string text) {
@@ -131,13 +131,13 @@ namespace Nekres.Mumble_Info.Core.UI {
         }
 
         public string GetMapPosition(bool markerPackFormat) {
-            return $"Position: {Coords2ToStr(GameService.Gw2Mumble.UI.MapPosition, markerPackFormat)}";
+            return $"{Coords2ToStr(GameService.Gw2Mumble.UI.MapPosition, markerPackFormat)}";
         }
         public string GetMapPosition() => GetMapPosition(false);
 
         public string GetMapType() {
             var comp = GameService.Gw2Mumble.CurrentMap.IsCompetitiveMode ? " (Competitive)" : string.Empty;
-            return $"Type: {GameService.Gw2Mumble.CurrentMap.Type}" + comp;
+            return $"{GameService.Gw2Mumble.CurrentMap.Type}" + comp;
         }
 
         public string GetContinent() {
@@ -154,7 +154,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 return string.Empty;
             }
 
-            var format = discordRichPresenceFormat ? "\"{0}\": {1}, // {2} ({1})" : "Hash: {0}";
+            var format = discordRichPresenceFormat ? "\"{0}\": {1}, // {2} ({1})" : "{0}";
             return string.Format(format, 
                                  MumbleInfoModule.Instance.Api.Map.GetHash(), 
                                  MumbleInfoModule.Instance.Api.Map.Id, 
