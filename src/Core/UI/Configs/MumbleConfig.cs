@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Blish_HUD.Input;
+using Newtonsoft.Json;
 
 namespace Nekres.Mumble_Info.Core.UI {
     internal class MumbleConfig : ConfigBase {
@@ -11,6 +12,21 @@ namespace Nekres.Mumble_Info.Core.UI {
                     SaveConfig(MumbleInfoModule.Instance.MumbleConfig);
                 }
             }
+        }
+
+        private KeyBinding _shortcut;
+        [JsonProperty("shortcut")]
+        public KeyBinding Shortcut {
+            get => _shortcut;
+            set {
+                if (SetProperty(ref _shortcut, value)) {
+                    SaveConfig(MumbleInfoModule.Instance.MumbleConfig);
+                }
+            }
+        }
+
+        protected override void BindingChanged() {
+            SaveConfig(MumbleInfoModule.Instance.MumbleConfig);
         }
     }
 }
