@@ -370,7 +370,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 TextDataColor = _cyan
             };
             lblServerAddress.MouseEntered += OnLabelEnter;
-            lblServerAddress.MouseLeft    += (o, _) => OnLabelLeft(o, Color.White, _cyan);
+            lblServerAddress.MouseLeft    += (o, _) => OnLabelLeft(o, _blue, _cyan);
             lblServerAddress.Click += async (_, _) => {
                 await this.Presenter.CopyToClipboard(this.Presenter.GetServerAddress());
             };
