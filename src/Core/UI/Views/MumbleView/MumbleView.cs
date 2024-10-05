@@ -370,7 +370,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 TextDataColor = _cyan
             };
             lblServerAddress.MouseEntered += OnLabelEnter;
-            lblServerAddress.MouseLeft    += (o, _) => OnLabelLeft(o, Color.White, _cyan);
+            lblServerAddress.MouseLeft    += (o, _) => OnLabelLeft(o, _blue, _cyan);
             lblServerAddress.Click += async (_, _) => {
                 await this.Presenter.CopyToClipboard(this.Presenter.GetServerAddress());
             };
@@ -401,7 +401,7 @@ namespace Nekres.Mumble_Info.Core.UI {
                 pnlMap.Width           = e.CurrentRegion.Width - SCROLLBAR_WIDTH;
                 pnlInfo.Width          = e.CurrentRegion.Width - SCROLLBAR_WIDTH;
 
-                // AutoSizeWidth on DynamicLabel is not working and private members prevent overriding RecalculateLayout. Simply iterate here and save time.
+                // Fix: labels cutting off when window is opened smaller than their text requires width.
                 var allDataRows = flowContainer.Children.Skip(1).SelectMany(x => ((Container)x).Children);
                 foreach (var row in allDataRows) {
                     row.Width = row.Parent.ContentRegion.Width;

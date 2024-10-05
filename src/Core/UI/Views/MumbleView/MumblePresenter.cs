@@ -74,7 +74,7 @@ namespace Nekres.Mumble_Info.Core.UI {
 
         public string GetPlayerDirection(bool markerPackFormat) {
             var dir = Vec3ToStr(GameService.Gw2Mumble.PlayerCharacter.Forward(this.Model.SwapYZ), markerPackFormat);
-            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.AvatarFront).ToString().SplitCamelCase()})";
+            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.AvatarFront.SwapYZ()).ToString().SplitCamelCase()})";
         }
         public string GetPlayerDirection() => GetPlayerDirection(false);
 
@@ -85,7 +85,7 @@ namespace Nekres.Mumble_Info.Core.UI {
 
         public string GetCameraDirection(bool markerPackFormat) {
             var dir = Vec3ToStr(GameService.Gw2Mumble.PlayerCamera.Forward(this.Model.SwapYZ), markerPackFormat);
-            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.CameraFront).ToString().SplitCamelCase()})";
+            return markerPackFormat ? dir : $"{dir} ({DirectionUtil.IsFacing(GameService.Gw2Mumble.RawClient.CameraFront.SwapYZ()).ToString().SplitCamelCase()})";
         }
         public string GetCameraDirection() => GetCameraDirection(false);
 
